@@ -1,15 +1,21 @@
 package com.example.webserver
 
 import fi.iki.elonen.NanoHTTPD
+import fi.iki.elonen.NanoWSD
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 
-class WebServer (val port_num : Int) : NanoHTTPD(port_num) {
 
 
-    override fun serve(session: IHTTPSession?): Response {
+class WebServer (val port_num : Int = 8080) : NanoWSD(port_num) {
+
+    override fun openWebSocket(handshake: IHTTPSession?): WebSocket {
+        return Ws(handshake)
+    }
+
+    override fun serveHttp(session: IHTTPSession?): Response {
 
         var reply : Response = when(session?.uri){
             "/" -> newFixedLengthResponse("WHAT UP")
@@ -23,6 +29,8 @@ class WebServer (val port_num : Int) : NanoHTTPD(port_num) {
 
     }
 
+
+    //cutomized functions TAEWOO KIM
     private fun getSound() : Response{
         var myInput: InputStream? = null
         try {
@@ -42,4 +50,5 @@ class WebServer (val port_num : Int) : NanoHTTPD(port_num) {
     ): NanoHTTPD.Response {
         return NanoHTTPD.newChunkedResponse(status, mimeType, message)
     }
+
 }
