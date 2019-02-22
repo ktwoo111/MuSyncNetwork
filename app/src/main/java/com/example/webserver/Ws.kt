@@ -7,15 +7,15 @@ import java.io.IOException
 
 class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handshakeRequest) {
     override fun onOpen() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("WebSocket_Testing", "Attempts were made")
     }
 
     override fun onClose(code: NanoWSD.WebSocketFrame.CloseCode?, reason: String?, initiatedByRemote: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("WebSocket_Training", "BYE")
     }
 
     override fun onPong(pong: NanoWSD.WebSocketFrame?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("WebSocket_Training","PONG")
     }
 
     override fun onMessage(message: NanoWSD.WebSocketFrame?) {
@@ -23,6 +23,6 @@ class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handsha
     }
 
     override fun onException(exception: IOException?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("WebSocket_Training", "EXCEPTION")
     }
 }
