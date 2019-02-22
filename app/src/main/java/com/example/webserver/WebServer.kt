@@ -15,6 +15,7 @@ class WebServer (val port_num : Int) : NanoHTTPD(port_num) {
             "/" -> newFixedLengthResponse("WHAT UP")
             "/music" -> getSound()
             "/hi" -> newFixedLengthResponse("pls kill me now")
+            "/title" -> newFixedLengthResponse(allAudios.AudioList[1]._name)
             else -> newFixedLengthResponse("DEFAULT RESPONSE")
         }
 
