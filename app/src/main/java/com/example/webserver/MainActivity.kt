@@ -3,6 +3,9 @@ package com.example.webserver
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -13,11 +16,14 @@ import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity() {
 
     val yo : WebServer = WebServer(8080)
+    var musicPlayer: MediaPlayer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,21 +40,42 @@ class MainActivity : AppCompatActivity() {
             }
         } else {
 
-            allAudios.getAllAudioFromDevice(this) //fetching all the audio files in phone
-            audio_size.text = allAudios.AudioList.size.toString()
-
-
-            val wifiMan = this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val wifiInf = wifiMan.connectionInfo
-            val ipAddress = wifiInf.ipAddress
-            val ip = String.format(
-                "%d.%d.%d.%d", ipAddress and 0xff, ipAddress shr 8 and 0xff, ipAddress shr 16 and 0xff,
-                ipAddress shr 24 and 0xff
-            )
-            wifi_address.text = ip
-
-            yo.start()
         }
+
+        //initializing shit
+        allAudios.getAllAudioFromDevice(this) //fetching all the audio files in phone
+        audio_size.text = allAudios.AudioList.size.toString()
+
+
+        val wifiMan = this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiInf = wifiMan.connectionInfo
+        val ipAddress = wifiInf.ipAddress
+        val ip = String.format(
+            "%d.%d.%d.%d", ipAddress and 0xff, ipAddress shr 8 and 0xff, ipAddress shr 16 and 0xff,
+            ipAddress shr 24 and 0xff
+        )
+        wifi_address.text = ip
+
+        yo.start()
+
+        musicPlayer = MediaPlayer().apply {
+            setAudioStreamType(AudioManager.STREAM_MUSIC)
+            setDataSource(applicationContext, Uri.parse(allAudios.AudioList[1]._path))
+            prepare()
+        }
+        title_text.text = allAudios.AudioList[1]._name
+
+        play_button.setOnClickListener{
+            musicPlayer?.start()
+            Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
+
+        }
+        pause_button.setOnClickListener{
+            musicPlayer?.pause()
+            Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
+        }
+
+
     }
 
 
