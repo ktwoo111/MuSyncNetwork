@@ -66,11 +66,13 @@ class MainActivity : AppCompatActivity() {
         title_text.text = allAudios.AudioList[1]._name
 
         play_button.setOnClickListener{
+            GroupOwner.sendCommandToAllClients("1")
             musicPlayer?.start()
             Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
 
         }
         pause_button.setOnClickListener{
+            GroupOwner.sendCommandToAllClients("2")
             musicPlayer?.pause()
             Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
