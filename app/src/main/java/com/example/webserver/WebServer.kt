@@ -1,7 +1,5 @@
 package com.example.webserver
 
-import fi.iki.elonen.NanoHTTPD
-import fi.iki.elonen.NanoWSD
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException

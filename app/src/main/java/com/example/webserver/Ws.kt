@@ -1,8 +1,6 @@
 package com.example.webserver
 
 import android.util.Log
-import fi.iki.elonen.NanoHTTPD
-import fi.iki.elonen.NanoWSD
 import java.io.IOException
 
 class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handshakeRequest) {
@@ -20,6 +18,7 @@ class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handsha
 
     override fun onMessage(message: NanoWSD.WebSocketFrame?) {
         Log.d("WebSocket_Testing", message?.textPayload)
+        send("GREETINGS FROM SERVER")
     }
 
     override fun onException(exception: IOException?) {
