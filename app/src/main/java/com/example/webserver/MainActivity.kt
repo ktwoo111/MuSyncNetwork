@@ -21,9 +21,6 @@ import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
-    val yo : WebServer = WebServer(8080)
-    var musicPlayer: MediaPlayer? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,11 +39,12 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        //initializing shit
-        allAudios.getAllAudioFromDevice(this) //fetching all the audio files in phone
+
+        //fetching all the audio files in phon
+        allAudios.getAllAudioFromDevice(this)
         audio_size.text = allAudios.AudioList.size.toString()
 
-
+        //getting wifi address
         val wifiMan = this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
         val wifiInf = wifiMan.connectionInfo
         val ipAddress = wifiInf.ipAddress
@@ -56,24 +54,25 @@ class MainActivity : AppCompatActivity() {
         )
         wifi_address.text = ip
 
-        yo.start()
+        //start server
+        GroupOwner.RunServer()
 
-        musicPlayer = MediaPlayer().apply {
-            setAudioStreamType(AudioManager.STREAM_MUSIC)
-            setDataSource(applicationContext, Uri.parse(allAudios.AudioList[1]._path))
-            prepare()
-        }
+        //initialize player
+        ServerPlayer.initializeMusicPlayer(applicationContext)
+
+
+        //display title_text
         title_text.text = allAudios.AudioList[1]._name
 
+
+        //button listener
         play_button.setOnClickListener{
-            GroupOwner.sendCommandToAllClients("1")
-            musicPlayer?.start()
+            ServerPlayer.StartMusic()
             Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
 
         }
         pause_button.setOnClickListener{
-            GroupOwner.sendCommandToAllClients("2")
-            musicPlayer?.pause()
+            ServerPlayer.PauseMusic()
             Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
 
