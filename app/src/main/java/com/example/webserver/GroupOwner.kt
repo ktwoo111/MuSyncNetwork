@@ -1,5 +1,7 @@
 package com.example.webserver
 
+import android.util.Log
+
 object GroupOwner {
     var clients :MutableList<Ws> = mutableListOf<Ws>()
     val yo : WebServer = WebServer(8080)
@@ -26,6 +28,7 @@ object GroupOwner {
     fun sendPlayToAllClients(startTime: Long, delay: Long){
         for (client in clients) {
             client.send("1;${startTime};${delay}")
+            Log.d("handlerTest","startTimeToClient: ${startTime}, systemTime: ${System.currentTimeMillis()}")
         }
 
     }
