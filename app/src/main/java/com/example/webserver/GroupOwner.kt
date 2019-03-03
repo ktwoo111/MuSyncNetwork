@@ -12,6 +12,18 @@ object GroupOwner {
         clients.remove(a)
     }
 
+    fun sendPlayToAllClients(){
+        for (client in clients) {
+            client.send("1;${System.currentTimeMillis()};${ServerPlayer.musicPlayer?.currentPosition}")
+        }
+
+    }
+
+    fun sendPauseToAllClients(){
+        for (client in clients) {
+            client.send("2;${System.currentTimeMillis()};${ServerPlayer.musicPlayer?.currentPosition}")
+        }
+    }
     fun sendCommandToAllClients(input: String){
         for (client in clients){
             client.send(input)

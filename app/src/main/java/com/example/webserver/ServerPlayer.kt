@@ -12,14 +12,15 @@ object ServerPlayer {
     var musicPlayer: MediaPlayer? = MediaPlayer()
 
     fun StartMusic(){
-        GroupOwner.sendCommandToAllClients("1;${System.currentTimeMillis()};${musicPlayer?.currentPosition}")
         musicPlayer?.start()
-        Log.d("MUSIC_CURRENT", "${musicPlayer?.currentPosition}")
+        GroupOwner.sendPlayToAllClients()
+
     }
 
     fun PauseMusic(){
-        GroupOwner.sendCommandToAllClients("2;${System.currentTimeMillis()};${musicPlayer?.currentPosition}")
         musicPlayer?.pause()
+        GroupOwner.sendPauseToAllClients()
+
     }
 
 
