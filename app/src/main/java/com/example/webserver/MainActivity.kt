@@ -65,11 +65,16 @@ class MainActivity : AppCompatActivity() {
         title_text.text = allAudios.AudioList[1]._name
 
 
+
+        sync_button.setOnClickListener{
+            if(ServerPlayer.syncMusic()) {
+                Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show()
+            }
+        }
         //button listener
         play_button.setOnClickListener{
-            ServerPlayer.StartMusic()
-            Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
-
+                ServerPlayer.StartMusic()
+                Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
         }
         pause_button.setOnClickListener{
             ServerPlayer.PauseMusic()

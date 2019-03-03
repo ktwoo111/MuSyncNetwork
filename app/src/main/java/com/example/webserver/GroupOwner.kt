@@ -12,26 +12,26 @@ object GroupOwner {
         clients.remove(a)
     }
 
-    fun sendPlayToAllClients(){
+    fun SyncCurrentPositiontoAllClients() : Boolean{
+        try {
+            for (client in clients) {
+                client.send("0;${ServerPlayer.musicPlayer?.currentPosition}")
+            }
+            return true
+        }
+        catch (e: Exception) {
+            return false
+        }
+    }
+    fun sendPlayToAllClients(startTime: Long, delay: Long){
         for (client in clients) {
-            client.send("1;${System.currentTimeMillis()};${ServerPlayer.musicPlayer?.currentPosition}")
+            client.send("1;${startTime};${delay}")
         }
 
     }
-
-    fun SyncCurrentPosition(){
-
-        
-    }
-
     fun sendPauseToAllClients(){
         for (client in clients) {
-            client.send("2;${System.currentTimeMillis()};${ServerPlayer.musicPlayer?.currentPosition}")
-        }
-    }
-    fun sendCommandToAllClients(input: String){
-        for (client in clients){
-            client.send(input)
+            client.send("2")
         }
     }
     fun displayNumOfConnections() : Int {

@@ -12,20 +12,27 @@ object ServerPlayer {
     private const val LOG_TAG = "playerObject"
     var musicPlayer: MediaPlayer? = MediaPlayer()
     var handler: Handler = Handler()
+    var delay: Long = 5000 //delay of 5 seconds
     var mRunnable = Runnable {
         Log.d("handlerTest","TriggeredTime: ${System.currentTimeMillis()}")
         musicPlayer?.start()
     }
 
+
+    fun syncMusic(): Boolean{
+        return GroupOwner.SyncCurrentPositiontoAllClients()
+
+    }
+
+
     fun StartMusic(){
+        var startTime = System.currentTimeMillis()
         Log.d("handlerTest","startTime: ${System.currentTimeMillis()}")
         handler.postDelayed(
             mRunnable, // Runnable
-           5000
+           delay
         )
-        GroupOwner.SyncCurrentPosition()
-        GroupOwner.sendPlayToAllClients()
-
+        GroupOwner.sendPlayToAllClients(startTime,delay)
     }
 
     fun PauseMusic(){
