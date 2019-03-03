@@ -12,7 +12,7 @@ object ServerPlayer {
     private const val LOG_TAG = "playerObject"
     var musicPlayer: MediaPlayer? = MediaPlayer()
     var handler: Handler = Handler()
-    var delay: Long = 5000 //delay of 5 seconds
+    var delay: Long = 1500 //delay of amount
     var mRunnable = Runnable {
         Log.d("handlerTest","TriggeredTime: ${System.currentTimeMillis()}")
         musicPlayer?.start()
