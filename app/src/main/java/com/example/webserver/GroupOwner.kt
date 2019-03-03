@@ -19,6 +19,11 @@ object GroupOwner {
 
     }
 
+    fun SyncCurrentPosition(){
+
+        
+    }
+
     fun sendPauseToAllClients(){
         for (client in clients) {
             client.send("2;${System.currentTimeMillis()};${ServerPlayer.musicPlayer?.currentPosition}")
