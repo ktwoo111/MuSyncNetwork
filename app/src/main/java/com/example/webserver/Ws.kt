@@ -1,7 +1,6 @@
 package com.example.webserver
 
 
-//This class is needed to be used for WebServer.kt
 import android.util.Log
 import java.io.IOException
 
@@ -23,9 +22,6 @@ class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handsha
 
     override fun onMessage(message: NanoWSD.WebSocketFrame?) {
         Log.d("WebSocket_Testing", message?.textPayload)
-        if(message?.textPayload == "BR"){
-            //TODO
-        }
 
     }
 

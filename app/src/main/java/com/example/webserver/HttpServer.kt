@@ -7,13 +7,9 @@ import java.io.InputStream
 
 
 
-class WebServer (val port_num : Int = 8080) : NanoWSD(port_num) {
+class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
 
-    override fun openWebSocket(handshake: IHTTPSession?): WebSocket {
-        return Ws(handshake)
-    }
-
-    override fun serveHttp(session: IHTTPSession?): Response {
+    override fun serve(session: IHTTPSession?): Response {
 
         var reply : Response = when(session?.uri){
             "/" -> newFixedLengthResponse("WHAT UP")

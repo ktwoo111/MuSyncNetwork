@@ -4,7 +4,8 @@ import android.util.Log
 
 object GroupOwner {
     var clients :MutableList<Ws> = mutableListOf<Ws>()
-    val yo : WebServer = WebServer(8080)
+    val httpStuff : HttpServer = HttpServer()
+    val websocketStuff : WebSocketServer = WebSocketServer()
 
     fun clientAdded(a : Ws){
         clients.add(a)
@@ -17,7 +18,7 @@ object GroupOwner {
     fun SyncCurrentPositiontoAllClients() : Boolean{
         try {
             for (client in clients) {
-                client.send("0;${ServerPlayer.musicPlayer?.currentPosition}")
+                client.send("0;${ServerPlayer.musicPlayer?.currentPosition};${System.currentTimeMillis()}")
             }
             return true
         }
@@ -42,6 +43,7 @@ object GroupOwner {
     }
 
     fun RunServer(){
-        yo.start()
+        httpStuff.start() //starting http file server on port 8080
+        websocketStuff.start() //starting websocket serve ron port 8090
     }
 }
