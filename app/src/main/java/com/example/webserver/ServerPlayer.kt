@@ -6,11 +6,6 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Handler
 import android.util.Log
-import android.R.attr.delay
-import android.support.v4.os.HandlerCompat.postDelayed
-import android.R.attr.delay
-import android.support.v4.os.HandlerCompat.postDelayed
-import java.util.*
 
 
 object ServerPlayer {
@@ -25,7 +20,7 @@ object ServerPlayer {
     }
 
     fun syncMusic(): Boolean{
-        return GroupOwner.SyncCurrentPositiontoAllClients()
+        return ServerHolder.SyncCurrentPositiontoAllClients()
     }
 
 
@@ -38,12 +33,12 @@ object ServerPlayer {
             mRunnable, // Runnable
            delay
         )
-        GroupOwner.sendPlayToAllClients(startTime,delay)
+        ServerHolder.sendPlayToAllClients(startTime,delay)
     }
 
     fun PauseMusic(){
         musicPlayer?.pause()
-        GroupOwner.sendPauseToAllClients()
+        ServerHolder.sendPauseToAllClients()
 
     }
 

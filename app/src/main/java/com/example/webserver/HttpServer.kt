@@ -1,5 +1,6 @@
 package com.example.webserver
 
+import android.util.Log
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -11,24 +12,30 @@ class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
 
     override fun serve(session: IHTTPSession?): Response {
 
-        var reply : Response = when(session?.uri){
-            "/" -> newFixedLengthResponse("WHAT UP")
-            "/music" -> getSound()
-            "/hi" -> newFixedLengthResponse("pls kill me now")
-            "/title" -> newFixedLengthResponse(allAudios.AudioList[1]._name)
-            else -> newFixedLengthResponse("DEFAULT RESPONSE")
+        if (session?.uri == "/"){
+            return newFixedLengthResponse("WHAT UP")
         }
+        else if (session?.uri?.contains("/music") == true){
+            return getSound(session?.uri)
+        }
+        else if (session?.uri?.contains("/title") == true){
+            return newFixedLengthResponse(allAudios.AudioList[1]._name)
+        }
+        else {
+            return newFixedLengthResponse("DEFAULT RESPONSE")
 
-        return reply
-
+        }
     }
 
 
     //cutomized functions TAEWOO KIM
-    private fun getSound() : Response{
+    private fun getSound(input: String?) : Response{
+        var t = input?.split("/")
+        Log.d("HTTPSERVER", t.toString())
+
         var myInput: InputStream? = null
         try {
-            var file = File(allAudios.AudioList[1]._path)
+            var file = File(allAudios.AudioList[t?.get(2)?.toInt() as Int]._path)
             myInput = FileInputStream(file)
         } catch (e: IOException) {
             e.printStackTrace()

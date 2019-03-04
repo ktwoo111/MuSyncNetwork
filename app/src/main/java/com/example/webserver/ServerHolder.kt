@@ -2,7 +2,7 @@ package com.example.webserver
 
 import android.util.Log
 
-object GroupOwner {
+object ServerHolder {
     var clients :MutableList<Ws> = mutableListOf<Ws>()
     val httpStuff : HttpServer = HttpServer()
     val websocketStuff : WebSocketServer = WebSocketServer()
@@ -45,5 +45,12 @@ object GroupOwner {
     fun RunServer(){
         httpStuff.start() //starting http file server on port 8080
         websocketStuff.start() //starting websocket serve ron port 8090
+    }
+    fun StopServer(){
+        httpStuff.closeAllConnections()
+        httpStuff.stop()
+
+        websocketStuff.closeAllConnections()
+        websocketStuff.stop()
     }
 }

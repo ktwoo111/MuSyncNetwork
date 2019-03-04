@@ -3,16 +3,10 @@ package com.example.webserver
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.net.Uri
 import android.net.wifi.WifiManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.net.wifi.WifiInfo
-import android.support.v4.content.ContextCompat.getSystemService
 import kotlinx.android.synthetic.main.activity_main.*
-import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
@@ -55,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         wifi_address.text = ip
 
         //start server
-        GroupOwner.RunServer()
+        ServerHolder.RunServer()
 
         //initialize player
         ServerPlayer.initializeMusicPlayer(applicationContext)
@@ -106,6 +100,18 @@ class MainActivity : AppCompatActivity() {
                 // Ignore all other requests.
             }
         }
+    }
+
+    override fun onDestroy(){
+        //ServerHolder.StopServer()
+        Log.d("server_status", "onDestroy() called")
+        super.onDestroy()
+    }
+    override fun onStop(){
+        ServerHolder.StopServer()
+        Log.d("server_status", "servers destroyed")
+        super.onStop()
+
     }
 
 }
