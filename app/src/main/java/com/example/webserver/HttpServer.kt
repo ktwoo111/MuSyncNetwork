@@ -11,8 +11,10 @@ import java.io.InputStream
 class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
 
     override fun serve(session: IHTTPSession?): Response {
-
-        if (session?.uri == "/"){
+        if (session?.uri == "/position") {
+        return newFixedLengthResponse(MusicPlayer.musicPlayer?.currentPosition.toString())
+        }
+        else if (session?.uri == "/"){
             return newFixedLengthResponse("WHAT UP")
         }
         else if (session?.uri?.contains("/music") == true){

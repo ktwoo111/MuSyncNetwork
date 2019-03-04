@@ -48,15 +48,16 @@ class MainActivity : AppCompatActivity() {
         )
         wifi_address.text = ip
 
+
         //start server
         ServerHolder.RunServer()
 
         //initialize player
-        MusicPlayer.initializeMusicPlayer(applicationContext)
+        MusicPlayer.initializeMusicPlayer(applicationContext, ip)
 
 
         //display title_text
-        title_text.text = allAudios.AudioList[1]._name
+        title_text.text = allAudios.AudioList[100]._name
 
 
 

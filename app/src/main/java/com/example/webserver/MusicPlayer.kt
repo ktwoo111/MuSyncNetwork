@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Handler
 import android.util.Log
+import org.jetbrains.anko.doAsync
 
 
 object MusicPlayer {
@@ -26,18 +27,22 @@ object MusicPlayer {
             mRunnable, // Runnable
            delay
         )
-        //ServerHolder.sendPlayToAllClients(startTime,delay)
+        doAsync {
+            ServerHolder.sendPlayToAllClients(startTime, delay)
+        }
     }
 
     fun PauseMusic(){
         musicPlayer?.pause()
-        //ServerHolder.sendPauseToAllClients()
+        doAsync {
+            ServerHolder.sendPauseToAllClients()
+        }
 
     }
 
 
-    fun initializeMusicPlayer(context: Context){
-            musicPlayer?.setDataSource(context, Uri.parse(allAudios.AudioList[1]._path))
+    fun initializeMusicPlayer(context: Context, wifi_address: String){
+            musicPlayer?.setDataSource(allAudios.AudioList[476]._path)
             musicPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
             musicPlayer?.prepare()
             Log.d(LOG_TAG, "prepared")
