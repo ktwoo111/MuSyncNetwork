@@ -18,7 +18,7 @@ object ServerHolder {
     fun SyncCurrentPositiontoAllClients() : Boolean{
         try {
             for (client in clients) {
-                client.send("0;${ServerPlayer.musicPlayer?.currentPosition};${System.currentTimeMillis()}")
+                client.send("0;${MusicPlayer.musicPlayer?.currentPosition};${System.currentTimeMillis()}")
             }
             return true
         }

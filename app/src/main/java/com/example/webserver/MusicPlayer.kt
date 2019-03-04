@@ -8,7 +8,7 @@ import android.os.Handler
 import android.util.Log
 
 
-object ServerPlayer {
+object MusicPlayer {
 
     private const val LOG_TAG = "playerObject"
     var musicPlayer: MediaPlayer? = MediaPlayer()
@@ -19,13 +19,6 @@ object ServerPlayer {
         musicPlayer?.start()
     }
 
-    fun syncMusic(): Boolean{
-        return ServerHolder.SyncCurrentPositiontoAllClients()
-    }
-
-
-
-
     fun StartMusic(){
         var startTime = System.currentTimeMillis()
         Log.d("handlerTest","startTime: ${System.currentTimeMillis()}")
@@ -33,12 +26,12 @@ object ServerPlayer {
             mRunnable, // Runnable
            delay
         )
-        ServerHolder.sendPlayToAllClients(startTime,delay)
+        //ServerHolder.sendPlayToAllClients(startTime,delay)
     }
 
     fun PauseMusic(){
         musicPlayer?.pause()
-        ServerHolder.sendPauseToAllClients()
+        //ServerHolder.sendPauseToAllClients()
 
     }
 

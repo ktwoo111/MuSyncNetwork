@@ -19,7 +19,7 @@ class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
             return getSound(session?.uri)
         }
         else if (session?.uri?.contains("/title") == true){
-            return newFixedLengthResponse(allAudios.AudioList[1]._name)
+            return getTitle(session?.uri)
         }
         else {
             return newFixedLengthResponse("DEFAULT RESPONSE")
@@ -42,6 +42,14 @@ class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
         }
 
         return createResponse(NanoHTTPD.Response.Status.OK, "audio/mpeg", myInput)
+    }
+
+    private fun getTitle(input: String?) : Response{
+        var t = input?.split("/")
+        Log.d("HTTPSERVER", t.toString())
+
+
+        return newFixedLengthResponse(allAudios.AudioList[t?.get(2)?.toInt() as Int]._name)
     }
 
     //Announce that the file server accepts partial content requests

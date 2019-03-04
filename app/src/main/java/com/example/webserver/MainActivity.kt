@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         ServerHolder.RunServer()
 
         //initialize player
-        ServerPlayer.initializeMusicPlayer(applicationContext)
+        MusicPlayer.initializeMusicPlayer(applicationContext)
 
 
         //display title_text
@@ -60,18 +60,20 @@ class MainActivity : AppCompatActivity() {
 
 
 
+        /*
         sync_button.setOnClickListener{
-            if(ServerPlayer.syncMusic()) {
+            if(MusicPlayer.syncMusic()) {
                 Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show()
             }
         }
+        */
         //button listener
         play_button.setOnClickListener{
-                ServerPlayer.StartMusic()
+                MusicPlayer.StartMusic()
                 Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
         }
         pause_button.setOnClickListener{
-            ServerPlayer.PauseMusic()
+            MusicPlayer.PauseMusic()
             Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
 
@@ -103,13 +105,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy(){
-        //ServerHolder.StopServer()
+        ServerHolder.StopServer()
         Log.d("server_status", "onDestroy() called")
         super.onDestroy()
     }
     override fun onStop(){
-        ServerHolder.StopServer()
-        Log.d("server_status", "servers destroyed")
+        Log.d("server_status", "onStop() called")
         super.onStop()
 
     }
