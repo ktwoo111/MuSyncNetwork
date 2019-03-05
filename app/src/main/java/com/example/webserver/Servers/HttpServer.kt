@@ -1,6 +1,8 @@
-package com.example.webserver
+package com.example.webserver.Servers
 
 import android.util.Log
+import com.example.webserver.AudioRetrieval.allAudios
+import com.example.webserver.ModifiedLibrary.NanoHTTPD
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -12,7 +14,7 @@ class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
 
     override fun serve(session: IHTTPSession?): Response {
         if (session?.uri == "/position") {
-        return newFixedLengthResponse(MusicPlayer.musicPlayer?.currentPosition.toString())
+        return newFixedLengthResponse(ServerAndMusicHolder.musicPlayer?.currentPosition.toString())
         }
         else if (session?.uri == "/"){
             return newFixedLengthResponse("WHAT UP")

@@ -1,19 +1,21 @@
-package com.example.webserver
+package com.example.webserver.Servers
 
 
 import android.util.Log
+import com.example.webserver.ModifiedLibrary.NanoHTTPD
+import com.example.webserver.ModifiedLibrary.NanoWSD
 import java.io.IOException
 
 class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handshakeRequest) {
     override fun onOpen() {
         Log.d("WebSocket_Testing", "Attempts were made")
-        ServerHolder.clientAdded(this)
-        Log.d("WebSocket_Testing", "number of connections: ${ServerHolder.displayNumOfConnections()}")
+        ServerAndMusicHolder.clientAdded(this)
+        Log.d("WebSocket_Testing", "number of connections: ${ServerAndMusicHolder.displayNumOfConnections()}")
     }
 
     override fun onClose(code: NanoWSD.WebSocketFrame.CloseCode?, reason: String?, initiatedByRemote: Boolean) {
         Log.d("WebSocket_Training", "BYE")
-        ServerHolder.clientRemoved(this)
+        ServerAndMusicHolder.clientRemoved(this)
     }
 
     override fun onPong(pong: NanoWSD.WebSocketFrame?) {

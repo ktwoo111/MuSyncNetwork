@@ -1,4 +1,4 @@
-package com.example.webserver;
+package com.example.webserver.ModifiedLibrary;
 
 
 /*
@@ -49,9 +49,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.example.webserver.NanoWSD.WebSocketFrame.CloseCode;
-import com.example.webserver.NanoWSD.WebSocketFrame.CloseFrame;
-import com.example.webserver.NanoWSD.WebSocketFrame.OpCode;
+import com.example.webserver.ModifiedLibrary.NanoWSD.WebSocketFrame.CloseCode;
+import com.example.webserver.ModifiedLibrary.NanoWSD.WebSocketFrame.CloseFrame;
+import com.example.webserver.ModifiedLibrary.NanoWSD.WebSocketFrame.OpCode;
 
 public abstract class NanoWSD extends NanoHTTPD {
 

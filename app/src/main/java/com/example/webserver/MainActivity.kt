@@ -11,6 +11,8 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import com.example.webserver.AudioRetrieval.allAudios
+import com.example.webserver.Servers.ServerAndMusicHolder
 
 
 class MainActivity : AppCompatActivity() {
@@ -50,14 +52,14 @@ class MainActivity : AppCompatActivity() {
 
 
         //start server
-        ServerHolder.RunServer()
+        ServerAndMusicHolder.RunServer()
 
         //initialize player
-        MusicPlayer.initializeMusicPlayer(applicationContext, ip)
+        ServerAndMusicHolder.initializeMusicPlayer(applicationContext, ip)
 
 
         //display title_text
-        title_text.text = allAudios.AudioList[100]._name
+        title_text.text = allAudios.AudioList[ServerAndMusicHolder.musicIndex]._name
 
 
 
@@ -70,11 +72,11 @@ class MainActivity : AppCompatActivity() {
         */
         //button listener
         play_button.setOnClickListener{
-                MusicPlayer.StartMusic()
+                ServerAndMusicHolder?.StartMusic()
                 Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
         }
         pause_button.setOnClickListener{
-            MusicPlayer.PauseMusic()
+            ServerAndMusicHolder.PauseMusic()
             Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
 
@@ -106,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy(){
-        ServerHolder.StopServer()
+        ServerAndMusicHolder.StopServer()
         Log.d("server_status", "onDestroy() called")
         super.onDestroy()
     }
