@@ -3,20 +3,16 @@ package com.example.webserver
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.net.Uri
 import android.net.wifi.WifiManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.net.wifi.WifiInfo
-import android.support.v4.content.ContextCompat.getSystemService
 import kotlinx.android.synthetic.main.activity_main.*
-import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import com.example.webserver.AudioRetrieval.allAudios
+import com.example.webserver.Servers.ServerAndMusicHolder
 
 
 class MainActivity : AppCompatActivity() {
@@ -54,25 +50,33 @@ class MainActivity : AppCompatActivity() {
         )
         wifi_address.text = ip
 
+
         //start server
-        GroupOwner.RunServer()
+        ServerAndMusicHolder.RunServer()
 
         //initialize player
-        ServerPlayer.initializeMusicPlayer(applicationContext)
+        ServerAndMusicHolder.initializeMusicPlayer(applicationContext, ip)
 
 
         //display title_text
-        title_text.text = allAudios.AudioList[1]._name
+        title_text.text = allAudios.AudioList[ServerAndMusicHolder.musicIndex]._name
 
 
+
+        /*
+        sync_button.setOnClickListener{
+            if(MusicPlayer.syncMusic()) {
+                Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show()
+            }
+        }
+        */
         //button listener
         play_button.setOnClickListener{
-            ServerPlayer.StartMusic()
-            Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
-
+                ServerAndMusicHolder?.StartMusic()
+                Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
         }
         pause_button.setOnClickListener{
-            ServerPlayer.PauseMusic()
+            ServerAndMusicHolder.PauseMusic()
             Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
 
@@ -101,6 +105,17 @@ class MainActivity : AppCompatActivity() {
                 // Ignore all other requests.
             }
         }
+    }
+
+    override fun onDestroy(){
+        ServerAndMusicHolder.StopServer()
+        Log.d("server_status", "onDestroy() called")
+        super.onDestroy()
+    }
+    override fun onStop(){
+        Log.d("server_status", "onStop() called")
+        super.onStop()
+
     }
 
 }

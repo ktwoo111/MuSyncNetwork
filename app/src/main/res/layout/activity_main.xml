@@ -44,14 +44,24 @@
     >
         <Button
                 android:id="@+id/prev_button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="prev"
         />
         <Button
+                android:id="@+id/sync_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="sync"
+        />
+        <Button
                 android:id="@+id/play_button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="play"
@@ -66,7 +76,8 @@
 
         <Button
                 android:id="@+id/next_button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="next"
