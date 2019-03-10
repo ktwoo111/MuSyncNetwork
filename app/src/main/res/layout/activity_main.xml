@@ -7,6 +7,20 @@
         android:gravity="center"
         android:layout_margin="16dp"
         android:orientation="vertical">
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/isHost_button"
+            android:text="I am Host"
+    ></Button>
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/isClient_button"
+            android:text="I am Client"
+    ></Button>
     <TextView
             android:layout_width="match_parent"
     android:layout_height="wrap_content"

@@ -9,9 +9,11 @@ import com.example.webserver.AudioRetrieval.allAudios
 import org.jetbrains.anko.doAsync
 
 object ServerAndMusicHolder {
+    private const val LOG_TAG = "ServerAndMusicHolder"
     var clients :MutableList<Ws> = mutableListOf<Ws>()
     val httpStuff : HttpServer = HttpServer()
     val websocketStuff : WebSocketServer = WebSocketServer()
+    var currentTimeOnMusicPlayer = 0 //TODO: need to figure out way to update this value constantly
 
     fun clientAdded(a : Ws){
         clients.add(a)
@@ -21,10 +23,15 @@ object ServerAndMusicHolder {
         clients.remove(a)
     }
 
+    fun sendSyncToAllClients(startTime: Long,time: Int?){
+        for (client in clients) {
+            client.send("0;${startTime};${time}")
+        }
+    }
     fun sendPlayToAllClients(startTime: Long, delay: Long){
         for (client in clients) {
             client.send("1;${startTime};${delay}")
-            Log.d("handlerTest","startTimeToClient: ${startTime}, systemTime: ${System.currentTimeMillis()}")
+            Log.d(LOG_TAG,"startTimeToClient: ${startTime}")
         }
 
     }
@@ -33,6 +40,7 @@ object ServerAndMusicHolder {
             client.send("2")
         }
     }
+
     fun displayNumOfConnections() : Int {
         return clients.size
     }

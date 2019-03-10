@@ -14,7 +14,7 @@ class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
 
     override fun serve(session: IHTTPSession?): Response {
         if (session?.uri == "/position") {
-        return newFixedLengthResponse(ServerAndMusicHolder.musicPlayer?.currentPosition.toString())
+        return newFixedLengthResponse(ServerAndMusicHolder.currentTimeOnMusicPlayer.toString())
         }
         else if (session?.uri == "/"){
             return newFixedLengthResponse("WHAT UP")
@@ -27,7 +27,6 @@ class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
         }
         else {
             return newFixedLengthResponse("DEFAULT RESPONSE")
-
         }
     }
 

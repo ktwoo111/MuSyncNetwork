@@ -18,6 +18,7 @@ import android.widget.Toast
 import com.example.clientmusicplayer.ClientWebSocket
 import com.example.webserver.AudioRetrieval.allAudios
 import com.example.webserver.Servers.ServerAndMusicHolder
+import com.instacart.library.truetime.TrueTime
 import okhttp3.*
 import org.jetbrains.anko.doAsync
 import java.io.IOException
@@ -48,8 +49,8 @@ class MainActivity : AppCompatActivity() {
     val client: OkHttpClient? = OkHttpClient()
 
     fun HostStartMusic(){
-        var startTime = System.currentTimeMillis()
-        Log.d(LOG_TAG,"startTime for handler to initiate: ${System.currentTimeMillis()}")
+        var startTime = TrueTime.now().time
+        Log.d(LOG_TAG,"startTime for handler to initiate: ${startTime}")
         handler.postDelayed(
             mRunnable, // Runnable
             delay
@@ -67,23 +68,21 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun ClientStartMusic(){//TODO
-        var startTime = System.currentTimeMillis()
-        Log.d(LOG_TAG,"startTime for handler to initiate: ${System.currentTimeMillis()}")
-        handler.postDelayed(
-            mRunnable, // Runnable
-            delay
-        )
+    fun HostSyncMusic(){
+        var startTime = TrueTime.now().time
         doAsync {
-            ServerAndMusicHolder.sendPlayToAllClients(startTime, delay)
+            ServerAndMusicHolder.sendSyncToAllClients( startTime, musicPlayer?.currentPosition)
         }
+
+
     }
 
-    fun ClientPauseMusic(){//TODO
+    fun ClientStartMusic(){
+        musicPlayer?.start()
+    }
+
+    fun ClientPauseMusic(){
         musicPlayer?.pause()
-        doAsync {
-            ServerAndMusicHolder.sendPauseToAllClients()
-        }
 
     }
 
@@ -117,6 +116,12 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        //initialize and sync to True time
+        doAsync {
+            TrueTime.build().initialize()
+            Log.d(LOG_TAG,"True Time Initialized: ${TrueTime.now().time}")
+        }
+
         //getting wifi address
         val wifiMan = this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
         val wifiInf = wifiMan.connectionInfo
@@ -127,44 +132,58 @@ class MainActivity : AppCompatActivity() {
         )
         wifi_address_display.text = ip
 
+        isHost_button.setOnClickListener {
+            isHost_button.isEnabled = false
+            isClient_button.isEnabled = false
+            InitializationForHost()
+            isHost = true
 
 
-        //initialize player
-        ServerAndMusicHolder.initializeHostMusicPlayer(applicationContext, ip)
-
-
-        //display title_text
-        title_text.text = allAudios.AudioList[ServerAndMusicHolder.musicIndex]._name
-
-
-
-        /*
-        sync_button.setOnClickListener{
-            if(MusicPlayer.syncMusic()) {
-                Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show()
-            }
-        }
-        */
-        //button listener
-        play_button.setOnClickListener{
-                ServerAndMusicHolder?.StartMusic()
-                Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
-        }
-        pause_button.setOnClickListener{
-            ServerAndMusicHolder.PauseMusic()
-            Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
 
+        isClient_button.setOnClickListener {
+            isHost_button.isEnabled = false
+            isClient_button.isEnabled = false
+            InitializationForClient()
+            isHost = false
 
+
+        }
     }
 
     fun InitializationForHost(){
+        wifi_button.isEnabled = false
+
         //fetching all the audio files in phone
         allAudios.getAllAudioFromDevice(this)
         audio_size_display.text = allAudios.AudioList.size.toString()
 
         //start server
         ServerAndMusicHolder.RunServer()
+
+
+        music_index_button.setOnClickListener {
+            musicIndex = music_index.text.toString().toInt()
+            //display title_text
+            title_text.text = allAudios.AudioList[musicIndex]._name
+            //initialize player
+            initializeHostMusicPlayer()
+        }
+        //button listener
+        play_button.setOnClickListener{
+            HostStartMusic()
+            Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
+        }
+        pause_button.setOnClickListener{
+            HostPauseMusic()
+            Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
+        }
+
+        sync_button.setOnClickListener {
+            HostSyncMusic()
+            Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show()
+
+        }
 
 
     }
@@ -192,7 +211,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         music_index_button.setOnClickListener {
-            musicIndex = music_index.text as Int
+            musicIndex = music_index.text.toString().toInt()
             initializeClientMusicPlayer()
 
             //http request via Okhttp
@@ -236,10 +255,8 @@ class MainActivity : AppCompatActivity() {
 
             }
             client?.newCall(request_position)?.enqueue(hi)
-
-
-
         }
+        sync_button.isEnabled = false
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
