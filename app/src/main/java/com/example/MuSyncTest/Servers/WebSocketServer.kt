@@ -1,6 +1,6 @@
-package com.example.webserver.Servers
+package com.example.MuSyncTest.Servers
 
-import com.example.webserver.ModifiedLibrary.NanoWSD
+import com.example.MuSyncTest.ModifiedLibrary.NanoWSD
 
 
 class WebSocketServer (val port_num : Int = 8090) : NanoWSD(port_num) {

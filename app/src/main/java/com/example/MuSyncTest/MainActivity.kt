@@ -1,4 +1,4 @@
-package com.example.webserver
+package com.example.MuSyncTest
 
 import android.Manifest
 import android.content.Context
@@ -16,11 +16,13 @@ import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import com.example.clientmusicplayer.ClientWebSocket
-import com.example.webserver.AudioRetrieval.allAudios
-import com.example.webserver.Servers.ServerAndMusicHolder
+import com.example.MuSyncTest.AudioRetrieval.allAudios
+import com.example.MuSyncTest.Servers.ServerAndMusicHolder
 import com.instacart.library.truetime.TrueTime
 import okhttp3.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.onComplete
+import org.jetbrains.anko.toast
 import java.io.IOException
 
 
@@ -48,6 +50,11 @@ class MainActivity : AppCompatActivity() {
     var wifi_address = ""
     val client: OkHttpClient? = OkHttpClient()
 
+    fun getPosition(): Int?{
+        return musicPlayer?.currentPosition
+
+    }
+
     fun HostStartMusic(){
         var startTime = TrueTime.now().time
         Log.d(LOG_TAG,"startTime for handler to initiate: ${startTime}")
@@ -74,6 +81,11 @@ class MainActivity : AppCompatActivity() {
             ServerAndMusicHolder.sendSyncToAllClients( startTime, musicPlayer?.currentPosition)
         }
 
+
+    }
+
+    fun ClientSyncMusic(time: Int){
+        musicPlayer?.seekTo(time)
 
     }
 
@@ -119,7 +131,12 @@ class MainActivity : AppCompatActivity() {
         //initialize and sync to True time
         doAsync {
             TrueTime.build().initialize()
-            Log.d(LOG_TAG,"True Time Initialized: ${TrueTime.now().time}")
+            Log.d(LOG_TAG,"True Time Initialized")
+            onComplete{
+                runOnUiThread {
+                    toast("True Time Initialized")
+                }
+            }
         }
 
         //getting wifi address

@@ -1,4 +1,4 @@
-package com.example.webserver
+package com.example.MuSyncTest
 
 import org.junit.Test
 

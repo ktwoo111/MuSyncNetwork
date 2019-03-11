@@ -1,12 +1,6 @@
-package com.example.webserver.Servers
+package com.example.MuSyncTest.Servers
 
-import android.content.Context
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.os.Handler
 import android.util.Log
-import com.example.webserver.AudioRetrieval.allAudios
-import org.jetbrains.anko.doAsync
 
 object ServerAndMusicHolder {
     private const val LOG_TAG = "ServerAndMusicHolder"

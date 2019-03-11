@@ -2,12 +2,10 @@ package com.example.clientmusicplayer
 
 import android.os.Handler
 import android.util.Log
-import android.widget.Toast
-import com.example.webserver.MainActivity
+import com.example.MuSyncTest.MainActivity
 import com.instacart.library.truetime.TrueTime
 import okhttp3.*
 import okio.ByteString
-import java.io.IOException
 import kotlin.math.abs
 
 
@@ -26,8 +24,8 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
     var currentCode : String?  = ""
     var handler: Handler = Handler()
     var mRunnable = Runnable {
-        Log.d(LOG_TAG,"TriggeredTime: ${TrueTime.now().time}}")
         activity?.ClientStartMusic()
+        Log.d(LOG_TAG,"TriggeredTime: ${TrueTime.now().time}")
     }
 
     fun retrieveMessage(t: String?){
@@ -36,7 +34,7 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
     fun decipherMessage(){
         currentCode = messageFromServer?.get(0)
       if (currentCode == SYNC){
-          setSync(messageFromServer?.get(1)?.toLong() as Long, messageFromServer?.get(2)?.toLong() as Long)
+          setSync(messageFromServer?.get(1)?.toLong() as Long, messageFromServer?.get(2)?.toInt() as Int)
 
       }
       else if (currentCode == PLAY){
@@ -83,14 +81,15 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
         var newDelay = delayTime - abs(diff)
         Log.d(LOG_TAG, "client: $clientTime, server: $systemTimeFromServer, diff: $diff")
         handler.postDelayed(mRunnable,newDelay)
+        Log.d(LOG_TAG,"delayed play set")
     }
 
-    fun setSync(systemTimeFromServer: Long, timePosition: Long){
+    fun setSync(systemTimeFromServer: Long, timePosition: Int){
         var clientTime = TrueTime.now().time
         var diff = clientTime - systemTimeFromServer
-        var newSeekTime = timePosition + diff
-        activity?.musicPlayer?.seekTo(newSeekTime.toInt())
-        Log.d(LOG_TAG,"$newSeekTime , musicPosition: ${activity?.musicPlayer?.currentPosition}")
+        var newSeekTime : Int = timePosition + diff.toInt()
+        activity?.ClientSyncMusic(newSeekTime)
+        Log.d(LOG_TAG,"newSeekTime: $newSeekTime ,diff: $diff,  musicPosition: ${activity?.getPosition()}")
     }
     override fun onOpen(webSocket: WebSocket, response: Response) {
 
@@ -100,7 +99,7 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket?, text: String?){
         Log.d(LOG_TAG, "message: $text")
-        Log.d(LOG_TAG, "currentTIme: ${System.currentTimeMillis()}")
+        Log.d(LOG_TAG, "currentTime: ${System.currentTimeMillis()}")
         retrieveMessage(text)
         decipherMessage()
 

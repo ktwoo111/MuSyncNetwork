@@ -1,4 +1,4 @@
-package com.example.webserver.ModifiedLibrary;
+package com.example.MuSyncTest.ModifiedLibrary;
 
 
 /*
@@ -95,8 +95,8 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import com.example.webserver.ModifiedLibrary.NanoHTTPD.Response.IStatus;
-import com.example.webserver.ModifiedLibrary.NanoHTTPD.Response.Status;
+import com.example.MuSyncTest.ModifiedLibrary.NanoHTTPD.Response.IStatus;
+import com.example.MuSyncTest.ModifiedLibrary.NanoHTTPD.Response.Status;
 
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java

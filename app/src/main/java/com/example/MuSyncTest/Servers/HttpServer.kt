@@ -1,8 +1,8 @@
-package com.example.webserver.Servers
+package com.example.MuSyncTest.Servers
 
 import android.util.Log
-import com.example.webserver.AudioRetrieval.allAudios
-import com.example.webserver.ModifiedLibrary.NanoHTTPD
+import com.example.MuSyncTest.AudioRetrieval.allAudios
+import com.example.MuSyncTest.ModifiedLibrary.NanoHTTPD
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException

@@ -1,9 +1,9 @@
-package com.example.webserver.Servers
+package com.example.MuSyncTest.Servers
 
 
 import android.util.Log
-import com.example.webserver.ModifiedLibrary.NanoHTTPD
-import com.example.webserver.ModifiedLibrary.NanoWSD
+import com.example.MuSyncTest.ModifiedLibrary.NanoHTTPD
+import com.example.MuSyncTest.ModifiedLibrary.NanoWSD
 import java.io.IOException
 
 class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handshakeRequest) {
