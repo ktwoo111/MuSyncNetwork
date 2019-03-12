@@ -17,7 +17,19 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.clientmusicplayer.ClientWebSocket
 import com.example.MuSyncTest.AudioRetrieval.allAudios
-import com.example.MuSyncTest.Servers.ServerAndMusicHolder
+import com.example.MuSyncTest.MusicPlayer.HostPauseMusic
+import com.example.MuSyncTest.MusicPlayer.HostStartMusic
+import com.example.MuSyncTest.MusicPlayer.HostSyncMusic
+import com.example.MuSyncTest.MusicPlayer.client
+import com.example.MuSyncTest.MusicPlayer.httpStuff
+import com.example.MuSyncTest.MusicPlayer.initializeClientMusicPlayer
+import com.example.MuSyncTest.MusicPlayer.initializeHostMusicPlayer
+import com.example.MuSyncTest.MusicPlayer.musicIndex
+import com.example.MuSyncTest.MusicPlayer.musicPlayer
+import com.example.MuSyncTest.MusicPlayer.titleSuffix
+import com.example.MuSyncTest.MusicPlayer.wifi_address
+import com.example.MuSyncTest.MusicPlayer.wsStuff
+import com.example.MuSyncTest.Servers.ServerHolder
 import com.instacart.library.truetime.TrueTime
 import okhttp3.*
 import org.jetbrains.anko.doAsync
@@ -32,83 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     }
     var isHost = false
-    var musicIndex = -1
-    var musicPlayer: MediaPlayer? = MediaPlayer()
-    var handler: Handler = Handler()
-    var delay: Long = 1500 //delay of amount
-    var mRunnable = Runnable {
-        Log.d(LOG_TAG,"TriggeredTime for audio start: ${System.currentTimeMillis()}")
-        musicPlayer?.start()
-    }
 
-    //variables mainly for Client
-    val musicSuffix = ":8080/music/"
-    val titleSuffix = ":8080/title/"
-    val positionSuffix = ":8080/position"
-    var httpStuff = "http://"
-    var wsStuff = "ws://"
-    var wifi_address = ""
-    val client: OkHttpClient? = OkHttpClient()
-
-    fun getPosition(): Int?{
-        return musicPlayer?.currentPosition
-
-    }
-
-    fun HostStartMusic(){
-        var startTime = TrueTime.now().time
-        Log.d(LOG_TAG,"startTime for handler to initiate: ${startTime}")
-        handler.postDelayed(
-            mRunnable, // Runnable
-            delay
-        )
-        doAsync {
-            ServerAndMusicHolder.sendPlayToAllClients(startTime, delay)
-        }
-    }
-
-    fun HostPauseMusic(){
-        musicPlayer?.pause()
-        doAsync {
-            ServerAndMusicHolder.sendPauseToAllClients()
-        }
-
-    }
-
-    fun HostSyncMusic(){
-        var startTime = TrueTime.now().time
-        doAsync {
-            ServerAndMusicHolder.sendSyncToAllClients( startTime, musicPlayer?.currentPosition)
-        }
-
-
-    }
-
-    fun ClientSyncMusic(time: Int){
-        musicPlayer?.seekTo(time)
-
-    }
-
-    fun ClientStartMusic(){
-        musicPlayer?.start()
-    }
-
-    fun ClientPauseMusic(){
-        musicPlayer?.pause()
-
-    }
-
-    fun initializeHostMusicPlayer(){
-        musicPlayer?.setDataSource(allAudios.AudioList[musicIndex]._path)
-        musicPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        musicPlayer?.prepareAsync()
-    }
-
-    fun initializeClientMusicPlayer(){
-        musicPlayer?.setDataSource(httpStuff+wifi_address+musicSuffix+musicIndex)
-        musicPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        musicPlayer?.prepareAsync()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -176,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         audio_size_display.text = allAudios.AudioList.size.toString()
 
         //start server
-        ServerAndMusicHolder.RunServer()
+        ServerHolder.RunServer()
 
 
         music_index_button.setOnClickListener {
@@ -223,7 +159,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(LOG_TAG, "GETTING TO websocket")
             var web_url = wsStuff+wifi_address+":8090"
             var request_socket = Request.Builder().url(web_url).build()
-            var listener = ClientWebSocket(this)
+            var listener = ClientWebSocket()
             var ws = client?.newWebSocket(request_socket,listener)
         }
 
@@ -251,6 +187,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
+        /*
         sync_button.setOnClickListener {
             val url = httpStuff+wifi_address+":8080/position"
             val request_position = Request.Builder().url(url).build()
@@ -262,17 +199,18 @@ class MainActivity : AppCompatActivity() {
                     var diff = System.currentTimeMillis() - startTime
                     var position: Long? = body?.toLong()?.plus(diff)
                     musicPlayer?.seekTo(position?.toInt() as Int)
-                    Log.d(LOG_TAG, "got the title ${diff}")
+                    Log.d(LOG_TAG, "got the position ${diff}")
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
-                    Log.d(LOG_TAG, "not good stuff for http for title")
+                    Log.d(LOG_TAG, "not good stuff for http for position")
                 }
 
 
             }
             client?.newCall(request_position)?.enqueue(hi)
         }
+        */
         sync_button.isEnabled = false
     }
 
@@ -301,7 +239,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy(){
         if(isHost) {
-            ServerAndMusicHolder.StopServer()
+            ServerHolder.StopServer()
         }
         Log.d("server_status", "onDestroy() called")
         super.onDestroy()

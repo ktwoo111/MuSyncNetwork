@@ -3,13 +3,17 @@ package com.example.clientmusicplayer
 import android.os.Handler
 import android.util.Log
 import com.example.MuSyncTest.MainActivity
+import com.example.MuSyncTest.MusicPlayer.ClientPauseMusic
+import com.example.MuSyncTest.MusicPlayer.ClientStartMusic
+import com.example.MuSyncTest.MusicPlayer.ClientSyncMusic
+import com.example.MuSyncTest.MusicPlayer.getPosition
 import com.instacart.library.truetime.TrueTime
 import okhttp3.*
 import okio.ByteString
 import kotlin.math.abs
 
 
-class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
+class ClientWebSocket() : WebSocketListener() {
 
     companion object{
         private const val LOG_TAG= "ClientWebSocket"
@@ -24,7 +28,7 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
     var currentCode : String?  = ""
     var handler: Handler = Handler()
     var mRunnable = Runnable {
-        activity?.ClientStartMusic()
+       ClientStartMusic()
         Log.d(LOG_TAG,"TriggeredTime: ${TrueTime.now().time}")
     }
 
@@ -50,7 +54,7 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
 
     fun setPause(){
         Log.d(LOG_TAG, "pausing music")
-        activity?.ClientPauseMusic()
+        ClientPauseMusic()
         /*
         Log.d(LOG_TAG, "pausing music done; going to perform sync button")
         val url = activity?.httpStuff+activity?.wifi_address+":8080/position"
@@ -88,8 +92,8 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
         var clientTime = TrueTime.now().time
         var diff = clientTime - systemTimeFromServer
         var newSeekTime : Int = timePosition + diff.toInt()
-        activity?.ClientSyncMusic(newSeekTime)
-        Log.d(LOG_TAG,"newSeekTime: $newSeekTime ,diff: $diff,  musicPosition: ${activity?.getPosition()}")
+        ClientSyncMusic(newSeekTime)
+        Log.d(LOG_TAG,"newSeekTime: $newSeekTime ,diff: $diff,  musicPosition: ${getPosition()}")
     }
     override fun onOpen(webSocket: WebSocket, response: Response) {
 
