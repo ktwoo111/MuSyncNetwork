@@ -18,20 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.clientmusicplayer.ClientWebSocket
 import com.example.MuSyncTest.AudioRetrieval.allAudios
-import com.example.MuSyncTest.MusicPlayer.HostPauseMusic
-import com.example.MuSyncTest.MusicPlayer.HostSelectMusic
-import com.example.MuSyncTest.MusicPlayer.HostStartMusic
-import com.example.MuSyncTest.MusicPlayer.HostSyncMusic
-import com.example.MuSyncTest.MusicPlayer.ResetMusicPlayer
-import com.example.MuSyncTest.MusicPlayer.client
-import com.example.MuSyncTest.MusicPlayer.httpStuff
-import com.example.MuSyncTest.MusicPlayer.initializeClientMusicPlayer
-import com.example.MuSyncTest.MusicPlayer.initializeHostMusicPlayer
-import com.example.MuSyncTest.MusicPlayer.musicIndex
-import com.example.MuSyncTest.MusicPlayer.musicPlayer
-import com.example.MuSyncTest.MusicPlayer.titleSuffix
-import com.example.MuSyncTest.MusicPlayer.wifi_address
-import com.example.MuSyncTest.MusicPlayer.wsStuff
 import com.example.MuSyncTest.Servers.ServerHolder
 import com.instacart.library.truetime.TrueTime
 import okhttp3.*
@@ -44,17 +30,8 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
     companion object{
         private const val LOG_TAG = "448.MainActivity"
-        const val NEW_MUSIC = 0
-        val activityHandler = object: Handler(){
-            override fun handleMessage(msg: Message?) {
-                super.handleMessage(msg)
-            }
-
-        }
-
     }
     var isHost = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,45 +103,45 @@ class MainActivity : AppCompatActivity() {
 
 
         music_index_button.setOnClickListener {
-            musicIndex = music_index.text.toString().toInt()
+            MusicPlayer.musicIndex = music_index.text.toString().toInt()
             //display title_text
-            title_text.text = allAudios.AudioList[musicIndex]._name
+            title_text.text = allAudios.AudioList[ MusicPlayer.musicIndex]._name
             //initialize player
-            initializeHostMusicPlayer()
+            MusicPlayer.initializeHostMusicPlayer()
             //Tell clients about music selection
-            HostSelectMusic()
+            MusicPlayer.HostSelectMusic()
         }
         //button listener
         play_button.setOnClickListener{
-            HostStartMusic()
+            MusicPlayer.HostStartMusic()
             Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
         }
         pause_button.setOnClickListener{
-            HostPauseMusic()
+            MusicPlayer.HostPauseMusic()
             Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
 
         sync_button.setOnClickListener {
-            HostSyncMusic()
+            MusicPlayer.HostSyncMusic()
             Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show()
         }
 
         next_button.setOnClickListener{
-            musicIndex++
+            MusicPlayer.musicIndex++
             //display title_text
-            title_text.text = allAudios.AudioList[musicIndex]._name
-            ResetMusicPlayer()
-            initializeHostMusicPlayer()
-            HostSelectMusic()
+            title_text.text = allAudios.AudioList[MusicPlayer.musicIndex]._name
+            MusicPlayer.ResetMusicPlayer()
+            MusicPlayer.initializeHostMusicPlayer()
+            MusicPlayer.HostSelectMusic()
         }
 
         prev_button.setOnClickListener{
-            musicIndex--
+            MusicPlayer.musicIndex--
             //display title_text
-            title_text.text = allAudios.AudioList[musicIndex]._name
-            ResetMusicPlayer()
-            initializeHostMusicPlayer()
-            HostSelectMusic()
+            title_text.text = allAudios.AudioList[ MusicPlayer.musicIndex]._name
+            MusicPlayer.ResetMusicPlayer()
+            MusicPlayer.initializeHostMusicPlayer()
+            MusicPlayer.HostSelectMusic()
         }
 
 
@@ -173,37 +150,37 @@ class MainActivity : AppCompatActivity() {
     fun InitializationForClient(){
 
         play_button.setOnClickListener{
-            musicPlayer?.start()
+            MusicPlayer.musicPlayer?.start()
             Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
 
         }
         pause_button.setOnClickListener{
-            musicPlayer?.pause()
+            MusicPlayer.musicPlayer?.pause()
             Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show()
         }
         wifi_button.setOnClickListener{
-            wifi_address = wifi.text.toString()
+            MusicPlayer.wifi_address = wifi.text.toString()
             Toast.makeText(this, "WIFI submitted", Toast.LENGTH_SHORT).show()
 
             //setting up websocket
             Log.d(LOG_TAG, "GETTING TO websocket")
-            var web_url = wsStuff+wifi_address+":8090"
+            var web_url =  MusicPlayer.wsStuff+ MusicPlayer.wifi_address+":8090"
             var request_socket = Request.Builder().url(web_url).build()
             var listener = ClientWebSocket(this)
-            var ws = client?.newWebSocket(request_socket,listener)
+            var ws =  MusicPlayer.client?.newWebSocket(request_socket,listener)
         }
 
         music_index_button.setOnClickListener {
-            musicIndex = music_index.text.toString().toInt()
-            initializeClientMusicPlayer()
+            MusicPlayer.musicIndex = music_index.text.toString().toInt()
+            MusicPlayer.initializeClientMusicPlayer()
 
             //http request via Okhttp
             Log.d(LOG_TAG,"getting Title from Host")
-            val url = httpStuff+wifi_address+titleSuffix+musicIndex.toString()
+            val url =  MusicPlayer.httpStuff+ MusicPlayer.wifi_address+ MusicPlayer.titleSuffix+ MusicPlayer.musicIndex.toString()
             val request_title = Request.Builder().url(url).build()
             var startTime = System.currentTimeMillis()
             Log.d(LOG_TAG,"http start: $startTime")
-            client?.newCall(request_title)?.enqueue(object: Callback {
+            MusicPlayer.client?.newCall(request_title)?.enqueue(object: Callback {
                 override fun onResponse(call: Call?, response: Response?){ //this is being run on a different thread, so you have to trigger UIthread to make changes to UI with updated info
                     val body = response?.body()?.string()
                     setText(title_text,body as String)

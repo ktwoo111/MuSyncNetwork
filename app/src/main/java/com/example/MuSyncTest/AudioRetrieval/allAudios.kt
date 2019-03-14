@@ -7,9 +7,9 @@ import android.util.Log
 object allAudios {
     private const val LOG_TAG = ".448AllAudios"
 
-    val AudioList = mutableListOf<AudioModel>()
+    val AudioList = mutableListOf<AudioModel>() //a list of all the mp3 files in the phone
 
-    fun getAllAudioFromDevice(context: Context) {
+    fun getAllAudioFromDevice(context: Context) { //function to scrape all mp3 files and put it into AudioList
 
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(

@@ -12,7 +12,7 @@ import java.io.InputStream
 
 class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
 
-    override fun serve(session: IHTTPSession?): Response {
+    override fun serve(session: IHTTPSession?): Response { //what the http server returns when these url requests are made from server
         if (session?.uri == "/position") {
         return newFixedLengthResponse("TODO")
         }

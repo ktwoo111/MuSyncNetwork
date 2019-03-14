@@ -3,9 +3,9 @@ package com.example.MuSyncTest.Servers
 import android.util.Log
 import com.example.MuSyncTest.MusicPlayer
 
-object ServerHolder {
+object ServerHolder { //object to initialize and run both http and webserver
     private const val LOG_TAG = "ServerHolder"
-    var clients :MutableList<Ws> = mutableListOf<Ws>()
+    var clients :MutableList<Ws> = mutableListOf<Ws>() //list of client websockets
     val httpStuff : HttpServer = HttpServer()
     val websocketStuff : WebSocketServer = WebSocketServer()
 
