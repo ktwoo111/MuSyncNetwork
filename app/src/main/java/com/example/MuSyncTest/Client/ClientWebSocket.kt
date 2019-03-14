@@ -99,6 +99,7 @@ class ClientWebSocket(var activity: MainActivity) : WebSocketListener() { //the 
     }
 
     fun setSync(systemTimeFromServer: Long, timePosition: Int){
+        //Syncing only works with mp3 files that contains LAME/XING Header. I don't know why, but that's how Android's MediaPlayer works for streaming
         MusicPlayer.ClientSyncMusic(timePosition)
         Log.d(LOG_TAG,"musicPosition: ${ MusicPlayer.getPosition()}")
     }
