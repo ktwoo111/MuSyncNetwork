@@ -99,11 +99,8 @@ class ClientWebSocket(var activity: MainActivity) : WebSocketListener() { //the 
     }
 
     fun setSync(systemTimeFromServer: Long, timePosition: Int){
-        var clientTime = TrueTime.now().time
-        var diff = clientTime - systemTimeFromServer
-        var newSeekTime : Int = timePosition + diff.toInt()
-        MusicPlayer.ClientSyncMusic(newSeekTime)
-        Log.d(LOG_TAG,"newSeekTime: $newSeekTime ,diff: $diff,  musicPosition: ${ MusicPlayer.getPosition()}")
+        MusicPlayer.ClientSyncMusic(timePosition)
+        Log.d(LOG_TAG,"musicPosition: ${ MusicPlayer.getPosition()}")
     }
     override fun onOpen(webSocket: WebSocket, response: Response) {
         //if socket connnection to host is successful, "connected to master" log message should appear
