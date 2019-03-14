@@ -1,19 +1,23 @@
 package com.example.clientmusicplayer
 
+import android.content.Context
 import android.os.Handler
 import android.util.Log
 import com.example.MuSyncTest.MainActivity
+import com.example.MuSyncTest.MusicPlayer
 import com.example.MuSyncTest.MusicPlayer.ClientPauseMusic
 import com.example.MuSyncTest.MusicPlayer.ClientStartMusic
 import com.example.MuSyncTest.MusicPlayer.ClientSyncMusic
 import com.example.MuSyncTest.MusicPlayer.getPosition
 import com.instacart.library.truetime.TrueTime
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import okio.ByteString
+import java.io.IOException
 import kotlin.math.abs
 
 
-class ClientWebSocket() : WebSocketListener() {
+class ClientWebSocket(var activity: MainActivity) : WebSocketListener() {
 
     companion object{
         private const val LOG_TAG= "ClientWebSocket"
@@ -21,6 +25,7 @@ class ClientWebSocket() : WebSocketListener() {
         private const val SYNC = "0"
         private const val PLAY = "1"
         private const val PAUSE = "2"
+        private const val MUSIC_INDEX = "3"
 
     }
 
@@ -49,7 +54,34 @@ class ClientWebSocket() : WebSocketListener() {
             setPause()
 
         }
+        else if (currentCode == MUSIC_INDEX){
+          setMusicSelection(messageFromServer?.get(1)?.toInt() as Int)
 
+      }
+
+    }
+
+    fun setMusicSelection(index: Int){
+        MusicPlayer.musicIndex = index
+        MusicPlayer.ResetMusicPlayer()
+        MusicPlayer.initializeClientMusicPlayer()
+
+        //http request via Okhttp to get title
+        Log.d(LOG_TAG,"getting Title from Host")
+        val url = MusicPlayer.httpStuff + MusicPlayer.wifi_address + MusicPlayer.titleSuffix + MusicPlayer.musicIndex.toString()
+        val request_title = Request.Builder().url(url).build()
+        var startTime = System.currentTimeMillis()
+        Log.d(LOG_TAG,"http start: $startTime")
+        MusicPlayer.client?.newCall(request_title)?.enqueue(object: Callback {
+            override fun onResponse(call: Call?, response: Response?){ //this is being run on a different thread, so you have to trigger UIthread to make changes to UI with updated info
+                val body = response?.body()?.string()
+                activity?.setText(activity.title_text,body as String)
+            }
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d(LOG_TAG, "not good stuff for http for title")
+            }
+        })
+        //end of section for getting title
     }
 
     fun setPause(){

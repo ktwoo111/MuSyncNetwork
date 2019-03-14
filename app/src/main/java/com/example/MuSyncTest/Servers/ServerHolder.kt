@@ -1,6 +1,7 @@
 package com.example.MuSyncTest.Servers
 
 import android.util.Log
+import com.example.MuSyncTest.MusicPlayer
 
 object ServerHolder {
     private const val LOG_TAG = "ServerHolder"
@@ -31,6 +32,12 @@ object ServerHolder {
     fun sendPauseToAllClients(){
         for (client in clients) {
             client.send("2")
+        }
+    }
+
+    fun sendMusicToAllClients(){
+        for (client in clients) {
+            client.send("3;${MusicPlayer.musicIndex}")
         }
     }
 

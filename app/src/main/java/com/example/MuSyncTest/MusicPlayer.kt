@@ -14,7 +14,7 @@ object MusicPlayer {
     private const val LOG_TAG = "448.MUSICPLAYER"
     var musicIndex = -1
     var musicPlayer: MediaPlayer? = MediaPlayer()
-    var handler: Handler = Handler()
+    var handler: Handler = Handler() //used for Host
     var delay: Long = 1500 //delay of amount
     var mRunnable = Runnable {
         Log.d(LOG_TAG,"TriggeredTime for audio start: ${System.currentTimeMillis()}")
@@ -36,6 +36,7 @@ object MusicPlayer {
         return musicPlayer?.currentPosition
 
     }
+
 
     fun HostStartMusic(){
         var startTime = TrueTime.now().time
@@ -66,6 +67,12 @@ object MusicPlayer {
 
     }
 
+    fun HostSelectMusic(){
+        doAsync {
+            ServerHolder.sendMusicToAllClients()
+        }
+    }
+
     fun ClientSyncMusic(time: Int){
         musicPlayer?.seekTo(time)
 
@@ -90,5 +97,10 @@ object MusicPlayer {
         musicPlayer?.setDataSource(httpStuff+wifi_address+musicSuffix+musicIndex)
         musicPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         musicPlayer?.prepareAsync()
+    }
+
+
+    fun ResetMusicPlayer(){
+        musicPlayer?.reset()
     }
 }

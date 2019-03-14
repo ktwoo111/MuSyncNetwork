@@ -9,6 +9,7 @@ import android.net.wifi.WifiManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import kotlinx.android.synthetic.main.activity_main.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -18,8 +19,10 @@ import android.widget.Toast
 import com.example.clientmusicplayer.ClientWebSocket
 import com.example.MuSyncTest.AudioRetrieval.allAudios
 import com.example.MuSyncTest.MusicPlayer.HostPauseMusic
+import com.example.MuSyncTest.MusicPlayer.HostSelectMusic
 import com.example.MuSyncTest.MusicPlayer.HostStartMusic
 import com.example.MuSyncTest.MusicPlayer.HostSyncMusic
+import com.example.MuSyncTest.MusicPlayer.ResetMusicPlayer
 import com.example.MuSyncTest.MusicPlayer.client
 import com.example.MuSyncTest.MusicPlayer.httpStuff
 import com.example.MuSyncTest.MusicPlayer.initializeClientMusicPlayer
@@ -41,6 +44,13 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
     companion object{
         private const val LOG_TAG = "448.MainActivity"
+        const val NEW_MUSIC = 0
+        val activityHandler = object: Handler(){
+            override fun handleMessage(msg: Message?) {
+                super.handleMessage(msg)
+            }
+
+        }
 
     }
     var isHost = false
@@ -121,6 +131,8 @@ class MainActivity : AppCompatActivity() {
             title_text.text = allAudios.AudioList[musicIndex]._name
             //initialize player
             initializeHostMusicPlayer()
+            //Tell clients about music selection
+            HostSelectMusic()
         }
         //button listener
         play_button.setOnClickListener{
@@ -135,13 +147,31 @@ class MainActivity : AppCompatActivity() {
         sync_button.setOnClickListener {
             HostSyncMusic()
             Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show()
+        }
 
+        next_button.setOnClickListener{
+            musicIndex++
+            //display title_text
+            title_text.text = allAudios.AudioList[musicIndex]._name
+            ResetMusicPlayer()
+            initializeHostMusicPlayer()
+            HostSelectMusic()
+        }
+
+        prev_button.setOnClickListener{
+            musicIndex--
+            //display title_text
+            title_text.text = allAudios.AudioList[musicIndex]._name
+            ResetMusicPlayer()
+            initializeHostMusicPlayer()
+            HostSelectMusic()
         }
 
 
     }
 
     fun InitializationForClient(){
+
         play_button.setOnClickListener{
             musicPlayer?.start()
             Toast.makeText(this, "Play", Toast.LENGTH_SHORT).show()
@@ -159,7 +189,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(LOG_TAG, "GETTING TO websocket")
             var web_url = wsStuff+wifi_address+":8090"
             var request_socket = Request.Builder().url(web_url).build()
-            var listener = ClientWebSocket()
+            var listener = ClientWebSocket(this)
             var ws = client?.newWebSocket(request_socket,listener)
         }
 
@@ -186,6 +216,7 @@ class MainActivity : AppCompatActivity() {
 
             })
         }
+        music_index_button.isEnabled = false
 
         /*
         sync_button.setOnClickListener {
@@ -250,7 +281,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setText(text: TextView, value: String) {
+    fun setText(text: TextView, value: String) {
         runOnUiThread { text.text = value }
     }
 
