@@ -29,6 +29,8 @@ object allAudios {
         )
         Log.d(LOG_TAG,"before checking the 'c'")
 
+
+        var counter = 0
         if (c != null) {
             while (c.moveToNext()) {
                 Log.d(LOG_TAG,"geting one file")
@@ -40,11 +42,12 @@ object allAudios {
 
                 val oneAudio = AudioModel(path, name, album, artist)
 
-                Log.d(LOG_TAG,"Name :$name, Album :$album")
+                Log.d(LOG_TAG,"Name :$name, Album :$album, Counter: $counter")
                 Log.d(LOG_TAG,"Path :$path, Artist :$artist")
 
                 // Add the model object to the list .
                 AudioList.add(oneAudio)
+                counter++
             }
             c.close()
         }
