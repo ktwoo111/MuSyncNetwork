@@ -1,15 +1,20 @@
 package com.example.clientmusicplayer
 
+import android.content.Context
 import android.os.Handler
 import android.util.Log
 import com.example.MuSyncTest.MainActivity
+import com.example.MuSyncTest.MusicPlayer
+
 import com.instacart.library.truetime.TrueTime
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import okio.ByteString
+import java.io.IOException
 import kotlin.math.abs
 
 
-class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
+class ClientWebSocket(var activity: MainActivity) : WebSocketListener() { //the websocket for the client
 
     companion object{
         private const val LOG_TAG= "ClientWebSocket"
@@ -17,6 +22,7 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
         private const val SYNC = "0"
         private const val PLAY = "1"
         private const val PAUSE = "2"
+        private const val MUSIC_INDEX = "3"
 
     }
 
@@ -24,7 +30,7 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
     var currentCode : String?  = ""
     var handler: Handler = Handler()
     var mRunnable = Runnable {
-        activity?.ClientStartMusic()
+        MusicPlayer.ClientStartMusic()
         Log.d(LOG_TAG,"TriggeredTime: ${TrueTime.now().time}")
     }
 
@@ -32,7 +38,7 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
         messageFromServer = t?.split(";")
     }
     fun decipherMessage(){
-        currentCode = messageFromServer?.get(0)
+        currentCode = messageFromServer?.get(0) //the first portion of the message
       if (currentCode == SYNC){
           setSync(messageFromServer?.get(1)?.toLong() as Long, messageFromServer?.get(2)?.toInt() as Int)
 
@@ -45,36 +51,44 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
             setPause()
 
         }
+        else if (currentCode == MUSIC_INDEX){
+          setMusicSelection(messageFromServer?.get(1)?.toInt() as Int)
 
+      }
+
+    }
+
+    fun setMusicSelection(index: Int){
+        MusicPlayer.musicIndex = index
+        MusicPlayer.ResetMusicPlayer()
+        MusicPlayer.initializeClientMusicPlayer()
+
+        //http request via Okhttp to get title
+        Log.d(LOG_TAG,"getting Title from Host")
+        val url = MusicPlayer.httpStuff + MusicPlayer.wifi_address + MusicPlayer.titleSuffix + MusicPlayer.musicIndex.toString()
+        val request_title = Request.Builder().url(url).build()
+        var startTime = System.currentTimeMillis()
+        Log.d(LOG_TAG,"http start: $startTime")
+        MusicPlayer.client?.newCall(request_title)?.enqueue(object: Callback {
+            override fun onResponse(call: Call?, response: Response?){
+                //this is being run on a different thread,
+                // so you have to trigger UIthread to make changes to UI with updated info
+                val body = response?.body()?.string()
+                activity?.setText(activity.title_text,body as String)
+            }
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d(LOG_TAG, "not good stuff for http for title")
+            }
+        })
+        //end of section for getting title
     }
 
     fun setPause(){
         Log.d(LOG_TAG, "pausing music")
-        activity?.ClientPauseMusic()
-        /*
-        Log.d(LOG_TAG, "pausing music done; going to perform sync button")
-        val url = activity?.httpStuff+activity?.wifi_address+":8080/position"
-        val request_position = Request.Builder().url(url).build()
-        var startTime = TrueTime.now().time
-        var hi = object: Callback {
-            override fun onResponse(call: Call?, response: Response?){
-                val body = response?.body()?.string()
-                var position: Long? = body?.toLong()
-                activity?.musicPlayer?.seekTo(position?.toInt() as Int)
-                Log.d(LOG_TAG,"player Position: ${activity?.musicPlayer?.currentPosition}")
-            }
-
-            override fun onFailure(call: Call, e: IOException) {
-                Log.d(LOG_TAG, "not good stuff for http for pausing sync")
-            }
-
-
-        }
-        activity.client?.newCall(request_position)?.enqueue(hi)
-        Log.d(LOG_TAG, "sync button done")
-        */
+        MusicPlayer.ClientPauseMusic()
         Log.d(LOG_TAG, "paused")
     }
+    
     fun setDelayedPlay(systemTimeFromServer: Long, delayTime: Long){
         var clientTime = TrueTime.now().time
         var diff = clientTime - systemTimeFromServer
@@ -85,14 +99,12 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
     }
 
     fun setSync(systemTimeFromServer: Long, timePosition: Int){
-        var clientTime = TrueTime.now().time
-        var diff = clientTime - systemTimeFromServer
-        var newSeekTime : Int = timePosition + diff.toInt()
-        activity?.ClientSyncMusic(newSeekTime)
-        Log.d(LOG_TAG,"newSeekTime: $newSeekTime ,diff: $diff,  musicPosition: ${activity?.getPosition()}")
+        //Syncing only works with mp3 files that contains LAME/XING Header. I don't know why, but that's how Android's MediaPlayer works for streaming
+        MusicPlayer.ClientSyncMusic(timePosition)
+        Log.d(LOG_TAG,"musicPosition: ${ MusicPlayer.getPosition()}")
     }
     override fun onOpen(webSocket: WebSocket, response: Response) {
-
+        //if socket connnection to host is successful, "connected to master" log message should appear
         Log.d(LOG_TAG, "connected to master")
 
     }
@@ -100,8 +112,8 @@ class ClientWebSocket(var activity : MainActivity) : WebSocketListener() {
     override fun onMessage(webSocket: WebSocket?, text: String?){
         Log.d(LOG_TAG, "message: $text")
         Log.d(LOG_TAG, "currentTime: ${System.currentTimeMillis()}")
-        retrieveMessage(text)
-        decipherMessage()
+        retrieveMessage(text) //splitting the message to each element and put it into a list
+        decipherMessage() //deciphering message according to whatever the first number is
 
     }
 

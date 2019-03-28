@@ -9,13 +9,13 @@ import java.io.IOException
 class Ws(handshakeRequest : NanoHTTPD.IHTTPSession?) : NanoWSD.WebSocket(handshakeRequest) {
     override fun onOpen() {
         Log.d("WebSocket_Testing", "Attempts were made")
-        ServerAndMusicHolder.clientAdded(this)
-        Log.d("WebSocket_Testing", "number of connections: ${ServerAndMusicHolder.displayNumOfConnections()}")
+        ServerHolder.clientAdded(this)
+        Log.d("WebSocket_Testing", "number of connections: ${ServerHolder.displayNumOfConnections()}")
     }
 
     override fun onClose(code: NanoWSD.WebSocketFrame.CloseCode?, reason: String?, initiatedByRemote: Boolean) {
         Log.d("WebSocket_Training", "BYE")
-        ServerAndMusicHolder.clientRemoved(this)
+        ServerHolder.clientRemoved(this)
     }
 
     override fun onPong(pong: NanoWSD.WebSocketFrame?) {

@@ -1,13 +1,13 @@
 package com.example.MuSyncTest.Servers
 
 import android.util.Log
+import com.example.MuSyncTest.MusicPlayer
 
-object ServerAndMusicHolder {
-    private const val LOG_TAG = "ServerAndMusicHolder"
-    var clients :MutableList<Ws> = mutableListOf<Ws>()
+object ServerHolder { //object to initialize and run both http and webserver
+    private const val LOG_TAG = "ServerHolder"
+    var clients :MutableList<Ws> = mutableListOf<Ws>() //list of client websockets
     val httpStuff : HttpServer = HttpServer()
     val websocketStuff : WebSocketServer = WebSocketServer()
-    var currentTimeOnMusicPlayer = 0 //TODO: need to figure out way to update this value constantly
 
     fun clientAdded(a : Ws){
         clients.add(a)
@@ -32,6 +32,12 @@ object ServerAndMusicHolder {
     fun sendPauseToAllClients(){
         for (client in clients) {
             client.send("2")
+        }
+    }
+
+    fun sendMusicToAllClients(){
+        for (client in clients) {
+            client.send("3;${MusicPlayer.musicIndex}")
         }
     }
 
