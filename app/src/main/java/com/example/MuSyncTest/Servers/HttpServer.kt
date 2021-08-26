@@ -32,6 +32,7 @@ class HttpServer (val port_num : Int = 8080) : NanoHTTPD(port_num) {
 
 
     //cutomized functions TAEWOO KIM
+    // Sends out the music file based on the index from the allAudio list that is passed.
     private fun getSound(input: String?) : Response{
         var t = input?.split("/")
         Log.d("HTTPSERVER", t.toString())
